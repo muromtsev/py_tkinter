@@ -7,3 +7,5 @@ file2.py
 game_of_dice.py
 task1.py
 weather_vlg.py
+
+__pycache__/
