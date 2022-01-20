@@ -1,6 +1,5 @@
 from tkinter import *
-from turtle import width
-from weather_vlg import weather_list
+from weather_api import weather_list
 import datetime
 import math
 
