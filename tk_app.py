@@ -1,4 +1,5 @@
 from tkinter import *
+from tkinter import ttk
 from weather_api import weather_list
 import datetime
 import math
@@ -39,25 +40,41 @@ temp_morn = to_celsius(day_dict[0]['temp']['morn'])
 temp_night = to_celsius(day_dict[0]['temp']['night'])
 temp_eve = to_celsius(day_dict[0]['temp']['eve'])
 
-window = Tk()
-window.title('Weather')
-window.geometry('400x250')
+root = Tk()
+root.title('Weather')
+root.geometry('400x250')
 
-name_city = Label(window, text='Volgograd', font=('monospace', 15))
-name_city.grid(column=0, row=0)
+mainframe = ttk.Frame(root, padding="3 3 12 12")
+mainframe.grid(column=0, row=0, sticky=(N, W, E, S))
 
-date_label = Label(window, text=today)
-date_label.grid(column=0, row=1)
+root.columnconfigure(0, weight=1)
+root.rowconfigure(0, weight=1)
 
-temp_label = Label(window, text=f"Temperature: {temp} C", justify=LEFT)
+
+city_var = StringVar()
+city_var.set('Volgograd')
+name_city = Label(mainframe, textvariable=city_var, font=('monospace', 15), background='pink')
+name_city.grid(column=2, row=0)
+
+day_var = StringVar()
+day_var.set(today)
+date_label = Label(mainframe, textvariable=day_var)
+date_label.grid(column=4, row=1)
+
+temp_var = IntVar()
+temp_var.set(temp)
+temp_label = Label(mainframe, text=f"Temperature: {temp_var.get()} C")
 temp_label.grid(column=0, row=2)
 
-wind_label = Label(window, text=f"Wind speed: {wind_speed} m/c", justify=LEFT)
+wind_var = IntVar()
+wind_var.set(wind_speed)
+wind_label = Label(mainframe, text=f"Wind speed: {wind_var.get()} m/c")
 wind_label.grid(column=0, row=3)
 
-clouds_label = Label(window, text=f"Clouds: {clouds}", justify=LEFT)
+clouds_var = IntVar()
+clouds_var.set(clouds)
+clouds_label = Label(mainframe, text=f"Clouds: {clouds_var.get()}")
 clouds_label.grid(column=0, row=4)
 
 
-
-window.mainloop()
+root.mainloop()
