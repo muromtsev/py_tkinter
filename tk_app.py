@@ -1,9 +1,12 @@
 from tkinter import *
 from tkinter import ttk
+from urllib.request import urlopen
 from weather_api import weather_list
 import datetime
 import time
 import math
+from PIL import Image, ImageTk
+import io
 
 # Functios
 def to_celsius(kelvin):
@@ -15,10 +18,8 @@ def to_celsius(kelvin):
     Returns:
         [int]: number in celsius
     """
-    return math.ceil(kelvin - 273.15) 
+    return f"{math.ceil(kelvin - 273.15)}\u00b0"
 
-def get_date(weather_list):
-    pass
 
 def get_string_date(weather_list, days=0):
     names_of_days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
@@ -39,10 +40,13 @@ def get_string_date(weather_list, days=0):
     else:
         return today.strftime('%d.%m.%Y')
 
+
+
 day_dict = weather_list[0]
 
 today = get_string_date(weather_list)
-#-----------variables-----------------
+
+#----------- VARIABLES -----------------
 temp = to_celsius(day_dict[0]['temp']['day'])   
 feels_temp = to_celsius(day_dict[0]['feels_like']['day'])
 wind_speed = day_dict[0]['wind_speed']
@@ -52,47 +56,76 @@ temp_min = to_celsius(day_dict[0]['temp']['min'])
 temp_morn = to_celsius(day_dict[0]['temp']['morn'])
 temp_night = to_celsius(day_dict[0]['temp']['night'])
 temp_eve = to_celsius(day_dict[0]['temp']['eve'])
+weather_description = day_dict[0]['weather'][0]['description']
 
 root = Tk()
 root.title('Weather')
 root.geometry('400x250')
 
-# Mainframe
+#----------- Mainframe -----------------
 mainframe = ttk.Frame(root, padding="3 3 12 12")
 mainframe.grid(column=0, row=0, sticky=(N, W, E, S))
 
+
+
 root.columnconfigure(0, weight=1)
+root.columnconfigure(1, weight=1)
 root.rowconfigure(0, weight=1)
 
-# City
+#
 city_var = StringVar()
 city_var.set('Volgograd')
-name_city = Label(mainframe, textvariable=city_var, font=('monospace', 15), background='pink')
+name_city = ttk.Label(mainframe, textvariable=city_var, font=('monospace', 15))
 name_city.grid(column=0, row=0)
 
-# Today
+#----------- Today -----------------
 day_var = StringVar()
 day_var.set(today)
-date_label = Label(mainframe, textvariable=day_var)
+date_label = ttk.Label(mainframe, textvariable=day_var)
 date_label.grid(column=0, row=1)
 
-# Temperature today
-temp_var = IntVar()
-temp_var.set(temp)
-temp_label = Label(mainframe, text=f"{temp_var.get()}\u00b0")
-temp_label.grid(column=0, row=2)
+# ----------- Frame temperature -----------------
+temperature_frame = ttk.Frame(mainframe)
+temperature_frame.grid(column=0, row=2)
 
-# Wind, m/s
-wind_var = IntVar()
-wind_var.set(wind_speed)
-wind_label = Label(mainframe, text=f"Wind speed: {wind_var.get()} m/c")
-wind_label.grid(column=0, row=3)
+# ----------- Icons -----------------
+get_icon=weather_list[0][0]['weather'][0]['icon']
+icon_url = f"http://openweathermap.org/img/wn/{get_icon}@2x.png"
+icon_byt = urlopen(icon_url).read()
+icon_open = Image.open(io.BytesIO(icon_byt))
+icon = ImageTk.PhotoImage(icon_open)
+# ----------- Frame icon -----------------
+icon_label = ttk.Label(temperature_frame, image=icon)
+icon_label.grid(column=0, row=2)
+
+temp_var = StringVar()
+temp_var.set(temp)
+temp_label = ttk.Label(temperature_frame, text=f"{temp_var.get()}", font=('Arial',  25))
+temp_label.grid(column=1, row=2)
+
+# ----------- Frame details -----------------
+details_frame = ttk.Frame(mainframe)
+details_frame.grid(column=2, row=2)
+
+description_details = ttk.Label(mainframe, text=weather_description)
+description_details.grid(column=2, row=2)
+temp_feel_like = ttk.Label(mainframe, text=f"feels like {feels_temp}")
+temp_feel_like.grid(column=2, row=3)
+wind_metr = ttk.Label(mainframe, text=f"{wind_speed} m/s")
+wind_metr.grid(column=2, row=4)
+clouds_proc = ttk.Label(mainframe, text=f"{clouds}%")
+clouds_proc.grid(column=2, row=5)
+
+# wind_var = StringVar()
+# wind_var.set(wind_speed)
+# wind_label = Label(details_frame, text=f"Wind speed: {wind_var.get()} m/c")
+# wind_label.grid(column=1, row=2)
 
 # Clouds, %
-clouds_var = IntVar()
-clouds_var.set(clouds)
-clouds_label = Label(mainframe, text=f"Clouds: {clouds_var.get()}")
-clouds_label.grid(column=0, row=4)
+# clouds_var = StringVar()
+# clouds_var.set(clouds)
+# clouds_label = Label(mainframe, text=f"Clouds: {clouds_var.get()}")
+# clouds_label.grid(column=0, row=4)
 
 
 root.mainloop()
